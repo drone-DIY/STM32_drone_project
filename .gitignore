@@ -1,0 +1,34 @@
+# STM32CubeIDE build output (regenerated from source on every build)
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+*.bin
+*.hex
+
+# STM32CubeIDE workspace metadata (per-PC, not part of the project)
+.metadata/
+*.launch.bak
+
+# Host unit tests / tools
+build/
+__pycache__/
+*.pyc
+
+# Blackbox logs: originals live on the NAS (see dev log), not in git
+*.bbl
+*.bfl
+
+# Editor / OS
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Secrets
+.env

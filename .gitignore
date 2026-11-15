@@ -1,0 +1,50 @@
+# STM32CubeIDE build output (regenerated from source on every build)
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+*.bin
+*.hex
+
+# STM32CubeIDE workspace metadata (per-PC, not part of the project)
+.metadata/
+*.launch.bak
+
+# Host unit tests / tools
+build/
+__pycache__/
+*.pyc
+
+# Blackbox logs: originals live on the NAS (see dev log), not in git
+*.bbl
+*.bfl
+
+# Editor / OS
+.vscode/
+*.swp
+Thumbs.db
+.DS_Store
+
+# Secrets
+.env
+
+# AI agent config and records (local only, not part of the source)
+.claude/
+.codex/
+.agents/
+.playwright-mcp/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+docs/01-plan/BACKLOG.md
+docs/01-plan/DECISIONS.md
+docs/01-plan/*-DAY-PLAN.md
+
+# STM32CubeIDE per-PC settings (debug launch config, IDE prefs)
+*.launch
+firmware/**/.settings/

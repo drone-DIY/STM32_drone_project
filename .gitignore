@@ -41,10 +41,7 @@ Thumbs.db
 AGENTS.md
 CLAUDE.md
 GEMINI.md
-docs/01-plan/BACKLOG.md
-docs/01-plan/DECISIONS.md
-docs/01-plan/*-DAY-PLAN.md
 
 # STM32CubeIDE per-PC settings (debug launch config, IDE prefs)
 *.launch
-firmware/**/.settings/
+.settings/

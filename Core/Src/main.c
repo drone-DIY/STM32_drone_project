@@ -40,16 +40,21 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi1;
+
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-
+volatile uint8_t g_who_am_i = 0;
+volatile uint8_t g_rx0 = 0, g_rx1 = 0;
+volatile int g_spi_status = -1;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
+static void MX_SPI1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -89,8 +94,23 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
+	HAL_Delay(50);
 
+	__HAL_SPI_ENABLE(&hspi1); /* ① 클록 선을 먼저 '쉬는 위치(High)'로 */
+	HAL_Delay(1);
+
+	uint8_t tx[2] = { 0x75 | 0x80, 0x00 };
+	uint8_t rx[2] = { 0xAA, 0xAA }; /* ② 일부러 0이 아닌 값으로 시작 */
+
+	HAL_GPIO_WritePin(IMU_CS_GPIO_Port, IMU_CS_Pin, GPIO_PIN_RESET);
+	g_spi_status = HAL_SPI_TransmitReceive(&hspi1, tx, rx, 2, 100); /* ③ 성공 여부 저장 */
+	HAL_GPIO_WritePin(IMU_CS_GPIO_Port, IMU_CS_Pin, GPIO_PIN_SET);
+
+	g_rx0 = rx[0];
+	g_rx1 = rx[1];
+	g_who_am_i = rx[1];
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,6 +170,44 @@ void SystemClock_Config(void)
 }
 
 /**
+  * @brief SPI1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_SPI1_Init(void)
+{
+
+  /* USER CODE BEGIN SPI1_Init 0 */
+
+  /* USER CODE END SPI1_Init 0 */
+
+  /* USER CODE BEGIN SPI1_Init 1 */
+
+  /* USER CODE END SPI1_Init 1 */
+  /* SPI1 parameter configuration*/
+  hspi1.Instance = SPI1;
+  hspi1.Init.Mode = SPI_MODE_MASTER;
+  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+  hspi1.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
+  hspi1.Init.NSS = SPI_NSS_SOFT;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi1.Init.CRCPolynomial = 10;
+  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN SPI1_Init 2 */
+
+  /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
   * @brief USART1 Initialization Function
   * @param None
   * @retval None
@@ -189,13 +247,36 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
 
   /* GPIO Ports Clock Enable */
+  __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(IMU_CS_GPIO_Port, IMU_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(OSD_CS_GPIO_Port, OSD_CS_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : IMU_CS_Pin */
+  GPIO_InitStruct.Pin = IMU_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(IMU_CS_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : OSD_CS_Pin */
+  GPIO_InitStruct.Pin = OSD_CS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(OSD_CS_GPIO_Port, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
